@@ -8,6 +8,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Home from "../DrawerScreens/Home";
 import More from "../DrawerScreens/More";
 import { signOut } from "firebase/auth";
+import FriendScreen from '../FriendScreen';
+import { AntDesign } from '@expo/vector-icons';
+import NotificationsScreen from '../NotificationsScreen';
+import MessagesScreen from '../MessagesScreen';
 
 import { auth } from "../../config";
 
@@ -26,13 +30,9 @@ const HomeStack = createNativeStackNavigator();
 
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
+    <HomeStack.Navigator screenOptions={{headerShown: false}}>
       <HomeStack.Screen name="Home" component={Home} />
-      <HomeStack.Screen name="Details" component={DetailsScreen} />
+      <HomeStack.Screen name="Details" component={More} />
     </HomeStack.Navigator>
   );
 }
@@ -68,20 +68,48 @@ export default function TabNavigation() {
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={20} />
+            <AntDesign name="home" size={35} color="#ff00ff" />
+          ),
+          headerRight: () => (
+            <Button
+              onPress={() => alert("This is a button!")}
+              title="Info"
+              color="#00cc00"
+            />
           ),
         }}
       />
+      <Tab.Screen  options={{
+      tabBarLabel: 'message',
+      tabBarIcon: ({ color, size }) => (
+        <AntDesign name="message1" size={35} color="#ff00ff" />
+      ),
+    }} 
+    name="Messages" component={MessagesScreen}  />
+         <Tab.Screen options={{
+      tabBarLabel: 'Notification',
+      tabBarIcon: ({ color, size }) => (
+        <AntDesign name="notification" size={35} color="#ff00ff" />
+      ),
+    }} name="Notifications" component={NotificationsScreen} />
+      <Tab.Screen options={{
+      tabBarLabel: 'Requests',
+      tabBarIcon: ({ color, size }) => (
+        <AntDesign name="contacts" size={35} color="#ff00ff" />
+      ),
+    }} 
+    name="FriendScreen" component={FriendScreen} />
       <Tab.Screen
         name="Settings"
-        component={DetailsScreen}
+        component={More}
         options={{
           tabBarLabel: "Settings",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={20} />
+            <AntDesign name="profile" size={35} color="#ff00ff" />
           ),
         }}
       />
+    
     </Tab.Navigator>
   );
 }

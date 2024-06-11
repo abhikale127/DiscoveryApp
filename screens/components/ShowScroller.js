@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import { colors, gStyle, images } from "../constants";
 import mockData from "../mockdata/data";
+import { useNavigation } from "@react-navigation/native";
 
 const ShowScroller = ({ dataset, type }) => {
   const dataArray = Object.values(mockData[dataset]);
-
+  const navigation = useNavigation();
   return (
     <FlatList
       contentContainerStyle={gStyle.pHHalf}
@@ -27,7 +28,12 @@ const ShowScroller = ({ dataset, type }) => {
           renderItem = (
             <>
               <TouchableOpacity
-                onPress={() => Linking.openURL(`${item.videoUrl}`)}
+                // onPress={() => Linking.openURL(`${item.videoUrl}`)}
+                onPress={() => {
+                  navigation.navigate("MoviewDetailsScreen", {
+                    data: item,
+                  });
+                }}
               >
                 <Image
                   source={images[item.image]}

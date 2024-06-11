@@ -4,6 +4,9 @@ import { Formik } from "formik";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
+import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { db } from "../../config/firebase";
+
 import {
   View,
   TextInput,
@@ -14,6 +17,7 @@ import {
 import { Images, Colors, auth } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { signupValidationSchema } from "../../utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -30,18 +34,49 @@ export const SignupScreen = ({ navigation }) => {
   const handleSignup = async (values) => {
     const { email, password } = values;
 
-    createUserWithEmailAndPassword(auth, email, password).catch((error) =>
-      setErrorState(error.message)
-    );
-  };
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
 
+        // ...
+        try {
+          const docRef = doc(db, "User", user.email);
+          const data = {
+            email: user.email,
+            uid: user.uid,
+            photoURL: user.photoURL,
+            phoneNumber: user.phoneNumber,
+            displayName: user.displayName,
+          };
+          setDoc(docRef, data)
+            .then(() => {
+              console.log("Document has been added successfully");
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+          await AsyncStorage.setItem("email", user.email).then(() => {
+            console.log("success to set email");
+          });
+        } catch (e) {
+          console.error("Error adding document: ", e);
+        }
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log("error to sign in ", errorMessage);
+        // ..
+      });
+  };
   return (
     <View isSafe style={styles.container}>
       <KeyboardAwareScrollView enableOnAndroid={true}>
         {/* LogoContainer: consits app logo and screen title */}
         <View style={styles.logoContainer}>
-          <Logo uri={Images.logo} />
-          <Text style={styles.screenTitle}>Create a new account!</Text>
+          
+          <Text style={styles.screenTitle}>Create a new account in Alumni book!</Text>
         </View>
         {/* Formik Wrapper */}
         <Formik
@@ -117,7 +152,12 @@ export const SignupScreen = ({ navigation }) => {
                 <FormErrorMessage error={errorState} visible={true} />
               ) : null}
               {/* Signup button */}
-              <Button style={styles.button} onPress={handleSubmit}>
+              <Button
+                style={styles.button}
+                onPress={() => {
+                  handleSubmit();
+                }}
+              >
                 <Text style={styles.buttonText}>Signup</Text>
               </Button>
             </>

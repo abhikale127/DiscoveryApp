@@ -18,8 +18,10 @@ export default {
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
+      bundleIdentifier: "com.discovery.authsessiongoogle",
     },
     android: {
+      package: "com.discovery.authsessiongoogle",
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#FFFFFF",
@@ -29,6 +31,9 @@ export default {
       favicon: "./assets/favicon.png",
     },
     extra: {
+      eas: {
+        projectId: "ab32fbce-a633-4e8e-b01c-b29fe9df0342",
+      },
       apiKey: process.env.API_KEY,
       authDomain: process.env.AUTH_DOMAIN,
       projectId: process.env.PROJECT_ID,

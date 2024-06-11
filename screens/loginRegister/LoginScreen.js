@@ -14,6 +14,7 @@ import {
 import { Images, Colors, auth } from "../../config";
 import { useTogglePasswordVisibility } from "../../hooks";
 import { loginValidationSchema } from "../../utils";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const LoginScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
@@ -22,9 +23,21 @@ export const LoginScreen = ({ navigation }) => {
 
   const handleLogin = (values) => {
     const { email, password } = values;
-    signInWithEmailAndPassword(auth, email, password).catch((error) =>
-      setErrorState(error.message)
-    );
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+
+        await AsyncStorage.setItem("email", user.email).then(() => {
+          console.log("success to set email");
+        });
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.log("error to sign in ", errorMessage);
+        // ..
+      })
+      .catch((error) => setErrorState(error.message));
   };
   return (
     <>
@@ -32,8 +45,8 @@ export const LoginScreen = ({ navigation }) => {
         <KeyboardAwareScrollView enableOnAndroid={true}>
           {/* LogoContainer: consits app logo and screen title */}
           <View style={styles.logoContainer}>
-            <Logo uri={Images.logo} />
-            <Text style={styles.screenTitle}>Welcome back!</Text>
+          
+            <Text style={styles.screenTitle}>Welcome back to Alumni Book!</Text>
           </View>
           <Formik
             initialValues={{
@@ -41,7 +54,10 @@ export const LoginScreen = ({ navigation }) => {
               password: "",
             }}
             validationSchema={loginValidationSchema}
-            onSubmit={(values) => handleLogin(values)}
+            onSubmit={(values) => {
+              handleLogin(values);
+              storeData();
+            }}
           >
             {({
               values,

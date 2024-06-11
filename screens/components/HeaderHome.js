@@ -48,7 +48,7 @@ const HeaderHome = ({ all, show }) => {
         {all && (
           <React.Fragment>
             <TouchText
-              onPress={() => navigation.navigate("TvShows")}
+              // onPress={() => navigation.navigate("TvShows")}
               text="TV Shows"
               textStyle={styles.text}
             />
